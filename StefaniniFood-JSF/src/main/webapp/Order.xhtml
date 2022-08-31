@@ -1,0 +1,99 @@
+<ui:composition template="/WEB-INF/template/genericModel.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+	<ui:define name="corpo">
+
+		<h:form id="form">
+
+			<p:toolbar styleClass="toolbar">
+				<f:facet name="left">
+					<p:button value="Fazer um pedido"
+						icon="pi pi-shopping-cart" outcome="/Order.xhtml"/>
+					<span class="ui-separator"><span
+						class="ui-icon pi pi-ellipsis-v" /> </span>
+					<p:button type="button" value="Cadastrar um produto"
+						icon="pi pi-tag" outcome="/Produto.xhtml"/>
+				</f:facet>
+			</p:toolbar>
+
+			<p:messages showDetail="true" />
+			<p:growl id="growl" life="4000" />
+
+			<p:panel>
+				<h:panelGrid columns="2" styleClass="TabelaCadastro" cellspacing="8">
+					<p:outputLabel value="Escolha o produto:" indicateRequired="true" />
+					<p:selectOneMenu value="#{orderBean.product.id}" filter="true"
+						required="true" label="Produtos"
+						requiredMessage="Selecione um produto.">
+
+						<f:selectItem itemLabel="Selecione o produto"
+							noSelectionOption="true" />
+
+						<f:selectItems value="#{orderBean.products}" var="p"
+							itemValue="#{p.id}" itemLabel="#{p.name}" />
+
+					</p:selectOneMenu>
+
+					<h:outputLabel for="@next" value="Escolha a quantidade:" />
+					<p:spinner id="basic" value="#{orderBean.quantity}" required="true"
+						size="5" min="1" />
+
+					<p:outputLabel />
+					<p:commandButton value="Adicionar ao carrinho"
+						action="#{orderBean.addProduct}" update="form orderTable"
+						style="margin-top: 10px" />
+				</h:panelGrid>
+			</p:panel>
+
+			<p:dataTable value="#{orderBean.pedido.products}" var="p"
+				id="orderTable" styleClass="dataTable">
+
+				<f:facet name="header">Carrinho <i
+						class="pi pi-shopping-cart"></i>
+				</f:facet>
+
+
+				<p:column headerText="Nome">
+					<p:outputLabel value="#{p.name}" />
+				</p:column>
+
+				<p:column headerText="Preço">
+					<p:outputLabel value="#{p.price}">
+						<f:convertNumber currencyCode="BRL" type="currency" />
+					</p:outputLabel>
+				</p:column>
+
+				<p:column headerText="Descrição">
+					<p:outputLabel value="#{p.description}" />
+				</p:column>
+
+				<p:column headerText="" width="100">
+					<p:commandButton action="#{orderBean.removeProduct}"
+						icon="pi pi-trash" update="orderTable" process="@this"
+						title="Remover">
+						<f:setPropertyActionListener value="#{p}"
+							target="#{orderBean.product}" />
+					</p:commandButton>
+				</p:column>
+
+				<f:facet name="footer">
+					<p:outputLabel value="Valor total: #{orderBean.pedido.totalPrice}">
+						<f:convertNumber currencyCode="BRL" type="currency" />
+						
+						<p:commandButton value="Finalizar compra"
+							action="#{orderBean.add}" update="form orderTable"
+							style="margin-top: 10px" />
+					</p:outputLabel>
+				</f:facet>
+
+			</p:dataTable>
+
+		</h:form>
+
+	</ui:define>
+
+</ui:composition>
